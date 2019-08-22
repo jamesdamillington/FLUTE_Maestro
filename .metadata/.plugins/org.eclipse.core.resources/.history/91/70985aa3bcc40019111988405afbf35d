@@ -36,7 +36,7 @@ public class Maestro {
 		
 		final String craftypath = "C:/Users/k1076631/craftyworkspace/CRAFTY_TemplateCoBRA/";
 		final String stellapath = "C:\\Users\\k1076631\\Stella\\";
-		final String scenarioname = "testing_2019-08-22i";//must be the same as in Scenario.xml in CRAFTY
+		final String scenarioname = "testing_2019-08-22b";//must be the same as in Scenario.xml in CRAFTY
 		final String outputdir = "output/Brazil/Unknown/";//must be output/World/Region with the latter two found in Scenario and Region xml files in CRAFTY/data/xml
 		final String Stellabatchfile = "testscript-2000.bat";
 		final String demandfile = "Demand_2019-07-15c_2001.csv";
@@ -236,7 +236,7 @@ public class Maestro {
 				    	System.out.println(thenewline[(tic-(starttic-1))]);
 				    	indemandsoy = Double.parseDouble(thenewline[(tic-(starttic-1))]);
 				    	
-				    	/*  
+				    	  
 				    	//2019-08-21
 				    	indemandsoy = indemandsoy-(storagesoy);//modify soy internal demand by available storage starting with internal
 				    	double modstoragesoy=0;
@@ -249,8 +249,8 @@ public class Maestro {
 				    	if(demandsoy<0){
 				    		demandsoy=0;
 				    	}
-				    	*/ 
-				    		
+				    	 
+				    	/*	
 				    	//2019-08-22
 				    	double modstoragesoy=0;
 				    	double modindemandsoy=indemandsoy;
@@ -270,7 +270,7 @@ public class Maestro {
 				    	if(moddemandsoy<0){   //if storage was sufficient to meet both internal and external demand
 				    		moddemandsoy = 0;
 				    	}			    	
-				    	
+				    	*/
 				    	
 				    	////////////////////maizein///////////////////read in internal demand data for appropriate year for maize
 				    	line3 = zr.readLine();
@@ -280,7 +280,7 @@ public class Maestro {
 				    	System.out.println(thenewline[(tic-(starttic-1))]);
 				    	indemandmaize = Double.parseDouble(thenewline[(tic-(starttic-1))]);
 				    	
-				    	/* 
+				    	 
 				    	//2019-08-21
 				    	indemandmaize = indemandmaize-(storagemaize);//starting with internal
 				    	double modstoragemaize=0;
@@ -293,8 +293,8 @@ public class Maestro {
 				    	if(demandmaize<0){
 				    		demandmaize=0;
 				    	}			    	
-				    	*/
 				    	
+				    	/*
 				    	//2019-08-22
 				    	double modstoragemaize=0;
 				    	double modindemandmaize=indemandmaize;
@@ -314,7 +314,7 @@ public class Maestro {
 				    	if(moddemandmaize<0){   //if storage was sufficient to meet both internal and external demand
 				    		moddemandmaize = 0;
 				    	}
-				    	
+				    	*/
 				    	///////////////Meat/////////////////read in internal demand data for appropriate year for animal produce
 				    	line3 = zr.readLine();
 				    	System.out.println(line3);
@@ -345,15 +345,15 @@ public class Maestro {
 				    	//include 10state proportion conversions here
 				    	//conversion from gigagrams to CRAFTY units 
 				    	//2019-08-22
-				    	double demandsoyc = soy_10state*((moddemandsoy+modindemandsoy)/soyintensity); //scale demand to be in CRAFTY cells (currently based on production data maybe should be based on export)
+				    	//double demandsoyc = soy_10state*((moddemandsoy+modindemandsoy)/soyintensity); //scale demand to be in CRAFTY cells (currently based on production data maybe should be based on export)
 				    	//2019-08-21
-				    	//double demandsoyc = soy_10state*((demandsoy+indemandsoy)/soyintensity); //scale demand to be in CRAFTY cells (currently based on production data maybe should be based on export)
+				    	double demandsoyc = soy_10state*((demandsoy+indemandsoy)/soyintensity); //scale demand to be in CRAFTY cells (currently based on production data maybe should be based on export)
 				    	
 				    	//conversion from gigagrams to CRAFTY units
 				    	//2019-08-22
-				    	double demandmaizec = maize_10state*((moddemandmaize+modindemandmaize)/maizeintensity);//scale demand to be in CRAFTY cells (currently based on production data maybe should be based on export)
+				    	//double demandmaizec = maize_10state*((moddemandmaize+modindemandmaize)/maizeintensity);//scale demand to be in CRAFTY cells (currently based on production data maybe should be based on export)
 				    	//2019-08-21
-				    	//double demandmaizec = maize_10state*((demandmaize+indemandmaize)/maizeintensity);//scale demand to be in CRAFTY cells (currently based on production data maybe should be based on export)
+				    	double demandmaizec = maize_10state*((demandmaize+indemandmaize)/maizeintensity);//scale demand to be in CRAFTY cells (currently based on production data maybe should be based on export)
 				    	
 				    	//conversion from gigagrams to CRAFTY units
 				    	double demandmeatc = meat_10state*((demandmeat+indemandmeat)/meatintensity);
@@ -611,6 +611,7 @@ public class Maestro {
 				    		inputmaize = demandmaize;   //set input (sent to stella) to equal what is required
 				    		wastemaize = storagemaize - demandmaize;  //demand is not wasted but everything else is
 				    		storagemaize = 0;     //set storage to zero even if there is some left, to represent it going bad after one year
+				    		
 				    		storagemaize += supplymaize;   //put remaining supply (production) from this year into storage for next year
 				    	}
 				    	else{         //storage is not sufficient to meet external demand (no waste)
@@ -655,7 +656,7 @@ public class Maestro {
 							 m1.write("\n");
 							 m1.write("Maize Production (gg),"+prodmaize);
 							 m1.write("\n");
-							 m1.write("Maize internal consumption (gg),"+inconsummaize);
+							 m1.write("Maize internal consumption (gg),"+inconsumsoy);
 							 m1.write("\n");
 							 m1.write("Maize exported (gg),"+inputmaize);
 							 m1.write("\n");

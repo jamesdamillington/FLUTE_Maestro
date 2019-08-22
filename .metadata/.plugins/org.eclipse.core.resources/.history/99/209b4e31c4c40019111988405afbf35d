@@ -36,7 +36,7 @@ public class Maestro {
 		
 		final String craftypath = "C:/Users/k1076631/craftyworkspace/CRAFTY_TemplateCoBRA/";
 		final String stellapath = "C:\\Users\\k1076631\\Stella\\";
-		final String scenarioname = "testing_2019-08-22i";//must be the same as in Scenario.xml in CRAFTY
+		final String scenarioname = "testing_2019-08-22a";//must be the same as in Scenario.xml in CRAFTY
 		final String outputdir = "output/Brazil/Unknown/";//must be output/World/Region with the latter two found in Scenario and Region xml files in CRAFTY/data/xml
 		final String Stellabatchfile = "testscript-2000.bat";
 		final String demandfile = "Demand_2019-07-15c_2001.csv";

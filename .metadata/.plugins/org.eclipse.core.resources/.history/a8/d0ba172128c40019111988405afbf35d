@@ -36,7 +36,7 @@ public class Maestro {
 		
 		final String craftypath = "C:/Users/k1076631/craftyworkspace/CRAFTY_TemplateCoBRA/";
 		final String stellapath = "C:\\Users\\k1076631\\Stella\\";
-		final String scenarioname = "testing_2019-08-22i";//must be the same as in Scenario.xml in CRAFTY
+		final String scenarioname = "testing_2019-08-16b";//must be the same as in Scenario.xml in CRAFTY
 		final String outputdir = "output/Brazil/Unknown/";//must be output/World/Region with the latter two found in Scenario and Region xml files in CRAFTY/data/xml
 		final String Stellabatchfile = "testscript-2000.bat";
 		final String demandfile = "Demand_2019-07-15c_2001.csv";
@@ -236,22 +236,7 @@ public class Maestro {
 				    	System.out.println(thenewline[(tic-(starttic-1))]);
 				    	indemandsoy = Double.parseDouble(thenewline[(tic-(starttic-1))]);
 				    	
-				    	/*  
-				    	//2019-08-21
-				    	indemandsoy = indemandsoy-(storagesoy);//modify soy internal demand by available storage starting with internal
-				    	double modstoragesoy=0;
-				    	if(indemandsoy<0){
-				    		indemandsoy=0;
-				    		modstoragesoy=storagesoy-indemandsoy;
-				    	}
-				    	//then if any storage left over, modify external
-				    	demandsoy = demandsoy-(modstoragesoy);
-				    	if(demandsoy<0){
-				    		demandsoy=0;
-				    	}
-				    	*/ 
 				    		
-				    	//2019-08-22
 				    	double modstoragesoy=0;
 				    	double modindemandsoy=indemandsoy;
 				    	double moddemandsoy=demandsoy;
@@ -280,8 +265,10 @@ public class Maestro {
 				    	System.out.println(thenewline[(tic-(starttic-1))]);
 				    	indemandmaize = Double.parseDouble(thenewline[(tic-(starttic-1))]);
 				    	
-				    	/* 
-				    	//2019-08-21
+				    	/*
+				    	//modify maize demand by available storage 
+				    	
+				    	
 				    	indemandmaize = indemandmaize-(storagemaize);//starting with internal
 				    	double modstoragemaize=0;
 				    	if(indemandmaize<0){
@@ -295,7 +282,6 @@ public class Maestro {
 				    	}			    	
 				    	*/
 				    	
-				    	//2019-08-22
 				    	double modstoragemaize=0;
 				    	double modindemandmaize=indemandmaize;
 				    	double moddemandmaize=demandmaize;
@@ -344,24 +330,18 @@ public class Maestro {
 				    	
 				    	//include 10state proportion conversions here
 				    	//conversion from gigagrams to CRAFTY units 
-				    	//2019-08-22
 				    	double demandsoyc = soy_10state*((moddemandsoy+modindemandsoy)/soyintensity); //scale demand to be in CRAFTY cells (currently based on production data maybe should be based on export)
-				    	//2019-08-21
-				    	//double demandsoyc = soy_10state*((demandsoy+indemandsoy)/soyintensity); //scale demand to be in CRAFTY cells (currently based on production data maybe should be based on export)
 				    	
 				    	//conversion from gigagrams to CRAFTY units
-				    	//2019-08-22
 				    	double demandmaizec = maize_10state*((moddemandmaize+modindemandmaize)/maizeintensity);//scale demand to be in CRAFTY cells (currently based on production data maybe should be based on export)
-				    	//2019-08-21
-				    	//double demandmaizec = maize_10state*((demandmaize+indemandmaize)/maizeintensity);//scale demand to be in CRAFTY cells (currently based on production data maybe should be based on export)
-				    	
+				    					    	
 				    	//conversion from gigagrams to CRAFTY units
 				    	double demandmeatc = meat_10state*((demandmeat+indemandmeat)/meatintensity);
 				    	double demandmilkc = 0;  //dummy value used below
 				    	double demandapc = demandmeatc; 
 				    	
 				    	//total demand for all cells in crafty units
-				    	//double demandtotal = demandsoyc+demandmaizec+demandapc;//scale resultant demand up to CRAFTY demand standards based on total number of CRAFTY cells and the relative proportions of the Stella supplied data
+				    	double demandtotal = demandsoyc+demandmaizec+demandapc;//scale resultant demand up to CRAFTY demand standards based on total number of CRAFTY cells and the relative proportions of the Stella supplied data
 				    	
 				    	//now calculate demand (in cells) for each commodity (needed so crafty is not so sensitive)
 				    	//demandsoyc=(demandsoyc*celltotal)/demandtotal;
@@ -540,10 +520,7 @@ public class Maestro {
 						
 						
 				    	/////////soyout///////////////////
-						double prodsoy = supplysoy;      //total production (from CRAFTY) for reporting
-						double inconsumsoy = indemandsoy;  //internal soy consumption for reporting
-						double wastesoy = 0;    //soy discarded from storage this year for reporting
-						
+						double reportsoy = supplysoy;
 						//calculate soy production to sent to stella (subtract internal demand)
 						if(indemandsoy>=storagesoy){
 							indemandsoy = indemandsoy-storagesoy;
@@ -556,15 +533,13 @@ public class Maestro {
 						supplysoy = supplysoy-indemandsoy;
 						
 						if(supplysoy<0){
-							supplysoy=0;	
-							inconsumsoy = prodsoy;  //in this case internal consumption is less than demand and equals all produced
+							supplysoy=0;
 						}
-						
+						double reportsoy2 = supplysoy;
 						
 						//do we add or take from storage?
 				    	if (demandsoy <= storagesoy){
 				    		inputsoy = demandsoy;
-				    		wastesoy = storagesoy - demandsoy;
 				    		storagesoy = 0;
 				    		storagesoy += supplysoy;
 				    	}
@@ -578,22 +553,17 @@ public class Maestro {
 				    			storagesoy=0;
 				    		}
 				    	}
-				    	
-				    	
 				    	System.out.println("storagesoy="+storagesoy);
 				    	System.out.println("inputsoy="+inputsoy);
 				    	System.out.println("demandsoy="+demandsoy);
 				    	System.out.println("supplysoy="+supplysoy);
 				    	
 				    	///////////////////maizeout///////////
+				    	double reportmaize = supplymaize;
 				    	
-				    	double prodmaize = supplymaize;      //total production (from CRAFTY)
-						double inconsummaize = indemandmaize;  //internal maize consumption
-						double wastemaize = 0;    //maize discarded from storage this year
-						
 				    	//calculate maize production to sent to stella (subtract internal demand)
 				    	if(indemandmaize>=storagemaize){
-							indemandmaize = indemandmaize-storagemaize; //internal demand cannot be met entirely from storage							
+							indemandmaize = indemandmaize-storagemaize; //internal demand cannot be met entirely from storage
 							storagemaize=0;
 						}
 						else{
@@ -601,32 +571,27 @@ public class Maestro {
 							indemandmaize=0;
 						}
 						supplymaize = supplymaize-indemandmaize;   //reduce supply (production) by internal demand (this may be zero)
-												
+						
 						if(supplymaize<0){   //if we could not meet internal demand with supply (production), set supply (production) to zero. this means nothing is exported (to stella)
 							supplymaize=0;
-							inconsummaize = prodmaize;  //in this case internal consumption is less than demand and equals all produced
 						}
+						double reportmaize2 = supplymaize;  //this is for maestro reporting
 						
 						if (demandmaize <= storagemaize){ //if what we still have in storage (after meeting internal demand) is sufficient for external demand...
 				    		inputmaize = demandmaize;   //set input (sent to stella) to equal what is required
-				    		wastemaize = storagemaize - demandmaize;  //demand is not wasted but everything else is
 				    		storagemaize = 0;     //set storage to zero even if there is some left, to represent it going bad after one year
 				    		storagemaize += supplymaize;   //put remaining supply (production) from this year into storage for next year
 				    	}
-				    	else{         //storage is not sufficient to meet external demand (no waste)
+				    	else{         //storage is not sufficient to meet external demand
 				    		inputmaize = storagemaize+supplymaize;  //set input to stella to be all remaining storage plus what we have in supply (production) - this could now exceed what we need for external demand (dealt with in next lines)
-				    		
 				    		if(inputmaize>=demandmaize){      //if combined storage and supply is greater than external demand
-				    					
-				    			storagemaize = inputmaize-demandmaize;  //remainder after external demand is met is put in storage (can assume this is all from this year as storage from last year was insufficient to meet the demand)
-				    	    	inputmaize=demandmaize;   //and this meets external demand to send to stella
+				    	    storagemaize = inputmaize-demandmaize;  //remainder after external demand is met is put in storage (can assume this is all from this year as storage from last year was insufficient to meet the demand)
+				    	    inputmaize=demandmaize;   //and this meets external demand to send to stella
 				    		}
 				    		else{   //otherwise in the case where storage+supply are insufficient to meet external demand, storage is zero (and anything we have is sent to stella)
-					    		
 				    			storagemaize=0;
 				    		}
 				    	}
-						
 				    	System.out.println("storagemaize="+storagemaize);
 				    	System.out.println("inputmaize="+inputmaize);
 				    	System.out.println("demandmaize="+demandmaize);
@@ -643,29 +608,26 @@ public class Maestro {
 						
 						 try{
 							 FileWriter m1 = new FileWriter(Maestroou, false);
-							 m1.write("Soy Production (gg),"+prodsoy);
+							 m1.write("Soy Production (gg),"+reportsoy);
 							 m1.write("\n");
-							 m1.write("Soy internal consumption (gg),"+inconsumsoy);
+							 m1.write("Soy Production (gg) after internal demand,"+reportsoy2);
 							 m1.write("\n");
 							 m1.write("Soy exported (gg),"+inputsoy);
 							 m1.write("\n");
 							 m1.write("Soy in storage (gg),"+storagesoy);
 							 m1.write("\n");
-							 m1.write("Soy wasted (gg),"+wastesoy);
+							 m1.write("Maize Production (gg),"+reportmaize);
 							 m1.write("\n");
-							 m1.write("Maize Production (gg),"+prodmaize);
-							 m1.write("\n");
-							 m1.write("Maize internal consumption (gg),"+inconsummaize);
+							 m1.write("Maize Production (gg) after internal demand,"+reportmaize2);
 							 m1.write("\n");
 							 m1.write("Maize exported (gg),"+inputmaize);
 							 m1.write("\n");
 							 m1.write("Maize in storage (gg),"+storagemaize);
 							 m1.write("\n");
-							 m1.write("Maize wasted (gg),"+wastemaize);
-							 m1.write("\n");
 							 m1.write("Total Meat Production (gg),"+supplymeat);
 							 m1.write("\n");
-							 
+							 m1.write("Total Dairy Production (gg), "+supplymilk);
+							 m1.write("\n");
 							 
 						
 							 //resume calculations for stella

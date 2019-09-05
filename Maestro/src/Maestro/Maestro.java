@@ -36,17 +36,17 @@ public class Maestro {
 		
 		final String craftypath = "C:/Users/k1076631/craftyworkspace/CRAFTY_TemplateCoBRA/";
 		final String stellapath = "C:\\Users\\k1076631\\Stella\\";
-		final String scenarioname = "testing_2019-08-22i";//must be the same as in Scenario.xml in CRAFTY
+		final String scenarioname = "testing_2019-09-05b";//must be the same as in Scenario.xml in CRAFTY
 		final String outputdir = "output/Brazil/Unknown/";//must be output/World/Region with the latter two found in Scenario and Region xml files in CRAFTY/data/xml
-		final String Stellabatchfile = "testscript-2000.bat";
+		final String Stellabatchfile = "testscript-2001to2030.bat";
 		final String demandfile = "Demand_2019-07-15c_2001.csv";
-		final String regionfile = "region2001_noDC_HD_2019-07-16.csv";  //no longer needed?
-		final String domestic_demandfile = "InternalCRAFTY_2001_2019-08-14.csv";
+		final String regionfile = "region2001_noDC_HD_2019-08-20.csv";  //no longer needed?
+		final String domestic_demandfile = "InternalCRAFTY_2001_2019-08-14_to2030.csv";
 		
 		//variable declaration
 		final int runs = 1; //specify number of runs with random parameters, must be the same as the -r number in CRAFTY configuration parameters
 		final int starttic = 2002;// has to be 1 year higher than starting tic in CRAFTY as its used to read correct line from stella input
-		final int finaltic = 2016; //has to be 1 year higher than ending tic as its used to read correct line from stella input
+		final int finaltic = 2031; //has to be 1 year higher than ending tic as its used to read correct line from stella input
 		ArrayList<Integer> Nature = new ArrayList<Integer>();
 		ArrayList<Integer> OtherAgri = new ArrayList<Integer>();
 		ArrayList<Integer> Other = new ArrayList<Integer>();
@@ -97,7 +97,6 @@ public class Maestro {
 				}
 			}
 
-			//double celltotal = 161905;//Total cellnumber in crafty model, used to make stella input proportional to crafty demand
 			double inputsoy = 0; //the soy which is sent to stella (i.e. exports)
 			double inputmaize = 0;// the maize which is sent to stella (i.e. exports)
 			double inputmeat = 0;//the ap which is sent to stella (meat) (i.e. exports)
@@ -235,21 +234,7 @@ public class Maestro {
 				    	String[] thenewline = line3.split(",");
 				    	System.out.println(thenewline[(tic-(starttic-1))]);
 				    	indemandsoy = Double.parseDouble(thenewline[(tic-(starttic-1))]);
-				    	
-				    	/*  
-				    	//2019-08-21
-				    	indemandsoy = indemandsoy-(storagesoy);//modify soy internal demand by available storage starting with internal
-				    	double modstoragesoy=0;
-				    	if(indemandsoy<0){
-				    		indemandsoy=0;
-				    		modstoragesoy=storagesoy-indemandsoy;
-				    	}
-				    	//then if any storage left over, modify external
-				    	demandsoy = demandsoy-(modstoragesoy);
-				    	if(demandsoy<0){
-				    		demandsoy=0;
-				    	}
-				    	*/ 
+
 				    		
 				    	//2019-08-22
 				    	double modstoragesoy=0;
@@ -280,20 +265,6 @@ public class Maestro {
 				    	System.out.println(thenewline[(tic-(starttic-1))]);
 				    	indemandmaize = Double.parseDouble(thenewline[(tic-(starttic-1))]);
 				    	
-				    	/* 
-				    	//2019-08-21
-				    	indemandmaize = indemandmaize-(storagemaize);//starting with internal
-				    	double modstoragemaize=0;
-				    	if(indemandmaize<0){
-				    		indemandmaize=0;
-				    		modstoragemaize=storagemaize-indemandmaize;
-				    	}
-				    	//then if any storage left over, modify external
-				    	demandmaize = demandmaize-(modstoragemaize);
-				    	if(demandmaize<0){
-				    		demandmaize=0;
-				    	}			    	
-				    	*/
 				    	
 				    	//2019-08-22
 				    	double modstoragemaize=0;
@@ -341,76 +312,40 @@ public class Maestro {
 				    	
 				    	
 				    	
-				    	
 				    	//include 10state proportion conversions here
 				    	//conversion from gigagrams to CRAFTY units 
-				    	//2019-08-22
 				    	double demandsoyc = soy_10state*((moddemandsoy+modindemandsoy)/soyintensity); //scale demand to be in CRAFTY cells (currently based on production data maybe should be based on export)
-				    	//2019-08-21
-				    	//double demandsoyc = soy_10state*((demandsoy+indemandsoy)/soyintensity); //scale demand to be in CRAFTY cells (currently based on production data maybe should be based on export)
 				    	
 				    	//conversion from gigagrams to CRAFTY units
-				    	//2019-08-22
 				    	double demandmaizec = maize_10state*((moddemandmaize+modindemandmaize)/maizeintensity);//scale demand to be in CRAFTY cells (currently based on production data maybe should be based on export)
-				    	//2019-08-21
-				    	//double demandmaizec = maize_10state*((demandmaize+indemandmaize)/maizeintensity);//scale demand to be in CRAFTY cells (currently based on production data maybe should be based on export)
 				    	
 				    	//conversion from gigagrams to CRAFTY units
 				    	double demandmeatc = meat_10state*((demandmeat+indemandmeat)/meatintensity);
 				    	double demandmilkc = 0;  //dummy value used below
 				    	double demandapc = demandmeatc; 
 				    	
-				    	//total demand for all cells in crafty units
-				    	//double demandtotal = demandsoyc+demandmaizec+demandapc;//scale resultant demand up to CRAFTY demand standards based on total number of CRAFTY cells and the relative proportions of the Stella supplied data
-				    	
-				    	//now calculate demand (in cells) for each commodity (needed so crafty is not so sensitive)
-				    	//demandsoyc=(demandsoyc*celltotal)/demandtotal;
-				    	//demandmaizec=(demandmaizec*celltotal)/demandtotal;
-				    	//demandapc=(demandapc*celltotal)/demandtotal;
-				    	
-				    	 //update demand file for crafty
+				    			    	
+				    	//update demand file for crafty
 				    	File filec = new File(craftypath+"data/csv/"+demandfile);
 						filec.delete();
 						
-						//2019-07-12 fix this hard coding so that it loops for length of original demand file?
 						File filec2 = new File(craftypath+"data/csv/"+demandfile);
 						try {
-						    FileWriter f2 = new FileWriter(filec2, false);
-						  f2.write("Year,Soy,Maize,Nature,Pasture,Other Agriculture,Other");
-						  f2.write("\n");
-						  f2.write(""+Year.get(0)+","+demandsoyc+","+demandmaizec+","+Nature.get(0)+","+demandapc+","+OtherAgri.get(0)+","+Other.get(0));
-						  f2.write("\n");
-						  f2.write(""+Year.get(1)+","+demandsoyc+","+demandmaizec+","+Nature.get(1)+","+demandapc+","+OtherAgri.get(1)+","+Other.get(1));
-						  f2.write("\n");
-						  f2.write(""+Year.get(2)+","+demandsoyc+","+demandmaizec+","+Nature.get(2)+","+demandapc+","+OtherAgri.get(2)+","+Other.get(2));
-						  f2.write("\n");
-						  f2.write(""+Year.get(3)+","+demandsoyc+","+demandmaizec+","+Nature.get(3)+","+demandapc+","+OtherAgri.get(3)+","+Other.get(3));
-						  f2.write("\n");
-						  f2.write(""+Year.get(4)+","+demandsoyc+","+demandmaizec+","+Nature.get(4)+","+demandapc+","+OtherAgri.get(4)+","+Other.get(4));
-						  f2.write("\n");
-						  f2.write(""+Year.get(5)+","+demandsoyc+","+demandmaizec+","+Nature.get(5)+","+demandapc+","+OtherAgri.get(5)+","+Other.get(5));
-						  f2.write("\n");
-						  f2.write(""+Year.get(6)+","+demandsoyc+","+demandmaizec+","+Nature.get(6)+","+demandapc+","+OtherAgri.get(6)+","+Other.get(6));
-						  f2.write("\n");
-						  f2.write(""+Year.get(7)+","+demandsoyc+","+demandmaizec+","+Nature.get(7)+","+demandapc+","+OtherAgri.get(7)+","+Other.get(7));
-						  f2.write("\n");
-						  f2.write(""+Year.get(8)+","+demandsoyc+","+demandmaizec+","+Nature.get(8)+","+demandapc+","+OtherAgri.get(8)+","+Other.get(8));
-						  f2.write("\n");
-						  f2.write(""+Year.get(9)+","+demandsoyc+","+demandmaizec+","+Nature.get(9)+","+demandapc+","+OtherAgri.get(9)+","+Other.get(9));
-						  f2.write("\n");
-						  f2.write(""+Year.get(10)+","+demandsoyc+","+demandmaizec+","+Nature.get(10)+","+demandapc+","+OtherAgri.get(10)+","+Other.get(10));
-						  f2.write("\n");
-						  f2.write(""+Year.get(11)+","+demandsoyc+","+demandmaizec+","+Nature.get(11)+","+demandapc+","+OtherAgri.get(11)+","+Other.get(11));
-						  f2.write("\n");
-						  f2.write(""+Year.get(12)+","+demandsoyc+","+demandmaizec+","+Nature.get(12)+","+demandapc+","+OtherAgri.get(12)+","+Other.get(12));
-						  f2.write("\n");
-						  f2.write(""+Year.get(13)+","+demandsoyc+","+demandmaizec+","+Nature.get(13)+","+demandapc+","+OtherAgri.get(13)+","+Other.get(13));
-						  f2.write("\n");
-						  f2.write(""+Year.get(14)+","+demandsoyc+","+demandmaizec+","+Nature.get(14)+","+demandapc+","+OtherAgri.get(14)+","+Other.get(14));
-						  f2.write("\n");
-						  //f2.write(""+Year.get(15)+","+demandsoyc+","+demandmaizec+","+Nature.get(15)+","+demandapc+","+OtherAgri.get(15)+","+Other.get(15));
-						  //f2.write("\n");
-						    f2.close();
+						    
+							FileWriter f2 = new FileWriter(filec2, false);
+							f2.write("Year,Soy,Maize,Nature,Pasture,Other Agriculture,Other");
+							f2.write("\n");
+						  
+							for(int yr = (starttic-1); yr <= (finaltic-1); yr++){
+								
+								int index = yr - (starttic-1);
+								System.out.println("Loop: yr = "+yr+", index = "+index);
+								f2.write(""+yr+","+demandsoyc+","+demandmaizec+","+Nature.get(index)+","+demandapc+","+OtherAgri.get(index)+","+Other.get(index));
+								f2.write("\n");
+							}
+						  
+							f2.close();						
+						
 						} catch (IOException e) {
 						    e.printStackTrace();
 						}

@@ -36,10 +36,10 @@ public class Maestro {
 		
 		final String craftypath = "C:/Users/k1076631/craftyworkspace/CRAFTY_TemplateCoBRA/";
 		final String stellapath = "C:\\Users\\k1076631\\Stella\\";
-		final String scenarioname = "scenario_chinaDietA_decrNature";//must be the same as in Scenario.xml in CRAFTY
+		final String scenarioname = "testing_2019-09-05f";//must be the same as in Scenario.xml in CRAFTY
 		final String outputdir = "output/Brazil/Unknown/";//must be output/World/Region with the latter two found in Scenario and Region xml files in CRAFTY/data/xml
 		final String Stellabatchfile = "testscript-2001to2030.bat";
-		final String demandfile = "Demand_2019-09-09_decrNature.csv"; //this should be the same as specified in CRAFTY region.xml
+		final String demandfile = "Demand_2019-07-15c_2001.csv";
 		final String regionfile = "region2001_noDC_HD_2019-08-20.csv";  //no longer needed?
 		final String domestic_demandfile = "InternalCRAFTY_2001_2019-08-14_to2030.csv";
 		
@@ -336,7 +336,6 @@ public class Maestro {
 							f2.write("Year,Soy,Maize,Nature,Pasture,Other Agriculture,Other");
 							f2.write("\n");
 						  
-							//loop, writing values each year
 							for(int yr = (starttic-1); yr <= (finaltic-1); yr++){
 								
 								int index = yr - (starttic-1);
@@ -656,16 +655,6 @@ public class Maestro {
 							 m1.write("\n");
 							 m1.write("CRAFTY demand Dairy (cells), "+milk_out);
 							 m1.write("\n");
-							 
-							 //index here
-							 int Aindex = tic - starttic;
-							 System.out.println("debug: Aindex="+Aindex);
-							 
-							 m1.write("CRAFTY demand Nature (cells), "+Nature.get(Aindex));
-							 m1.write("\n");
-							 m1.write("CRAFTY demand OAgri (cells), "+OtherAgri.get(Aindex));
-							 m1.write("\n");
-							 						 
 							  
 					    	 m1.close();
 					    	 
